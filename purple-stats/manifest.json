@@ -1,0 +1,9 @@
+{
+    "name": "PurpleStats",
+    "description": "Fun stats about your browser usage!",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "background.js"
+    }
+}
