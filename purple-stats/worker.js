@@ -1,7 +1,9 @@
 
 let lastDate = 0;
+let startDate = 0;
 let stats = {
-    tabCount: {today: 0, all: 0}
+    tabCount: {today: 0, all: 0},
+    seconds: {today: 0, all: 0}
 };
 
 function curDate() {
@@ -19,8 +21,9 @@ function update() {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
+    startDate = Date.now();
     chrome.storage.sync.set({
-        stats, lastDate
+        stats, lastDate, startDate
     });
     console.log("PurpleStats loaded");
     update();
@@ -31,4 +34,20 @@ chrome.tabs.onCreated.addListener(function(tab) {
     stats.tabCount.today++;
     stats.tabCount.all++;
     update();
+});
+
+chrome.runtime.onConnect.addListener(function(port) {
+    chrome.storage.sync.get(["stats", "lastDate", "startDate"], ({s,
+    ld, sd}) => {
+        stats = s;
+        lastDate = ld;
+        startDate = sd;
+    });
+    update();
+    // Increment count every second
+    setInterval(() => {
+        stats.seconds.today++;
+        stats.seconds.all++;
+        update();
+    }, 1000);
 });
